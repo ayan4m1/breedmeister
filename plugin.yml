@@ -1,0 +1,8 @@
+author: ayan4m1
+database: false
+description: Allows automation of breeding
+generator: http://dinnerbone.com/minecraft/tools/pluginator/
+main: me.ayan4m1.plugins.breedmeister.BreedMeister
+name: BreedMeister
+startup: postworld
+version: '0.1'
