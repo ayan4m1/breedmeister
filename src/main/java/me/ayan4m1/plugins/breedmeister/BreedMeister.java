@@ -27,6 +27,7 @@ public class BreedMeister extends JavaPlugin implements Listener {
 
 	//Radius to search (in blocks) for an empty block near animals when spawning baby
 	private Integer spawnRadius = 5;
+
 	public void onEnable() {
 		getServer().getPluginManager().registerEvents(this, this);
 	}
@@ -37,6 +38,7 @@ public class BreedMeister extends JavaPlugin implements Listener {
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
+		//Remove entity from breedTimes to prevent memory leaks
 		Integer entityId = event.getEntity().getEntityId();
 		if (this.breedTimes.containsKey(entityId)) {
 			this.breedTimes.remove(entityId);
