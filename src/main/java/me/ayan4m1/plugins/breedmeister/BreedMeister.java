@@ -19,12 +19,14 @@ public class BreedMeister extends JavaPlugin implements Listener {
 	//Map of entity ids to timestamps representing when they may next breed
 	private HashMap<Integer, Long> breedTimes = new HashMap<Integer, Long>();
 
-	//Maximum distance from dispenser to animal in blocks
+	//Maximum distance (in blocks) from dispenser to animal
 	private Integer maxDistance = 5;
 
 	//Per-animal delay between breeding in minutes
 	private Integer breedDelay = 5;
 
+	//Radius to search (in blocks) for an empty block near animals when spawning baby
+	private Integer spawnRadius = 5;
 	public void onEnable() {
 		getServer().getPluginManager().registerEvents(this, this);
 	}
@@ -65,8 +67,16 @@ public class BreedMeister extends JavaPlugin implements Listener {
 			return;
 		}
 
-		//Spawn a baby and cancel the BlockDispenseEvent
-		Animals newAnimal = (Animals)block.getWorld().spawnCreature(animalTwo.getLocation().add(1, 0, 1), animalTwo.getType());
+		//Find an empty location to spawn the baby, return if none is found
+		Location newLoc = this.getNearestFreeBlock(animalTwo.getLocation());
+		if (newLoc == null) {
+			this.getLogger().warning("Tried to spawn baby, but couldn't find a free block!");
+			event.setCancelled(true);
+			return;
+		}
+
+		//Spawn the baby if a valid location was found
+		Animals newAnimal = (Animals)block.getWorld().spawnCreature(newLoc, animalTwo.getType());
 		newAnimal.setBaby();
 
 		//Add the animals to the bred list
@@ -75,6 +85,28 @@ public class BreedMeister extends JavaPlugin implements Listener {
 		this.breedTimes.put(animalTwo.getEntityId(), nextBreedTime);
 
 		event.getItem().setAmount(event.getItem().getAmount() - 1);
+
+	private Location getNearestFreeBlock(Location animalLoc) {
+		if (animalLoc.getBlock().isEmpty()) {
+			return animalLoc;
+		}
+
+		//Check each block in our radius starting from the center
+		for(int x = 0; x <= (this.spawnRadius * 2); x++) {
+			for(int y = 0; y <= (this.spawnRadius * 2); y++) {
+				for(int z = 0; z <= (this.spawnRadius * 2); z++) {
+					Location testLoc = animalLoc.add(
+							(x % this.spawnRadius) * ((x < this.spawnRadius) ? -1 : 0),
+							(y % this.spawnRadius) * ((y < this.spawnRadius) ? -1 : 0),
+							(z % this.spawnRadius) * ((z < this.spawnRadius) ? -1 : 0));
+					if (testLoc.getBlock().isEmpty()) {
+						return testLoc;
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 
 	private Animals findValidAnimal(List<Entity> entities, Location dispenserLoc, Animals exceptThis) {
