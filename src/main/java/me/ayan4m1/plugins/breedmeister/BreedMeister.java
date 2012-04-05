@@ -46,11 +46,13 @@ public class BreedMeister extends JavaPlugin implements Listener {
 		//Search for two valid and distinct animals
 		Animals animalOne = this.findValidAnimal(entities, block.getLocation(), null);
 		if (animalOne == null) {
+			event.setCancelled(true);
 			return;
 		}
 
 		Animals animalTwo = this.findValidAnimal(entities, block.getLocation(), animalOne);
 		if (animalTwo == null) {
+			event.setCancelled(true);
 			return;
 		}
 
