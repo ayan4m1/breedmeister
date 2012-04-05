@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BreedMeister extends JavaPlugin implements Listener {
@@ -30,6 +31,14 @@ public class BreedMeister extends JavaPlugin implements Listener {
 
 	public void onDisable() {
 		this.breedTimes.clear();
+	}
+
+	@EventHandler
+	public void onEntityDeath(EntityDeathEvent event) {
+		Integer entityId = event.getEntity().getEntityId();
+		if (this.breedTimes.containsKey(entityId)) {
+			this.breedTimes.remove(entityId);
+		}
 	}
 
 	@EventHandler
