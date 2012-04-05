@@ -7,12 +7,15 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Dispenser;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BreedMeister extends JavaPlugin implements Listener {
@@ -86,7 +89,16 @@ public class BreedMeister extends JavaPlugin implements Listener {
 		this.breedTimes.put(animalOne.getEntityId(), nextBreedTime);
 		this.breedTimes.put(animalTwo.getEntityId(), nextBreedTime);
 
-		event.getItem().setAmount(event.getItem().getAmount() - 1);
+		//Consume one unit of wheat
+		Inventory dispInv = ((Dispenser)event.getBlock().getState()).getInventory();
+		ItemStack wheat = dispInv.getItem(dispInv.first(Material.WHEAT));
+		if (wheat.getAmount() > 1) {
+			wheat.setAmount(wheat.getAmount() - 1);
+		} else {
+			dispInv.remove(wheat);
+		}
+		event.setCancelled(true);
+	}
 
 	/**
 	 * Get the empty block nearest to the provided location 
