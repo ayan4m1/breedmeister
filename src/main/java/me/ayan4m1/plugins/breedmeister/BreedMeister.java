@@ -68,12 +68,13 @@ public class BreedMeister extends JavaPlugin implements Listener {
 		//Spawn a baby and cancel the BlockDispenseEvent
 		Animals newAnimal = (Animals)block.getWorld().spawnCreature(animalTwo.getLocation().add(1, 0, 1), animalTwo.getType());
 		newAnimal.setBaby();
-		event.setCancelled(true);
 
 		//Add the animals to the bred list
 		Long nextBreedTime = (new Date().getTime() / 1000) + (this.breedDelay * 60);
 		this.breedTimes.put(animalOne.getEntityId(), nextBreedTime);
 		this.breedTimes.put(animalTwo.getEntityId(), nextBreedTime);
+
+		event.getItem().setAmount(event.getItem().getAmount() - 1);
 	}
 
 	private Animals findValidAnimal(List<Entity> entities, Location dispenserLoc, Animals exceptThis) {
