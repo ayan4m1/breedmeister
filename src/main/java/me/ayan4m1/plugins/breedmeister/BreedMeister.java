@@ -86,6 +86,11 @@ public class BreedMeister extends JavaPlugin implements Listener {
 
 		event.getItem().setAmount(event.getItem().getAmount() - 1);
 
+	/**
+	 * Get the empty block nearest to the provided location 
+	 * @param animalLoc A location to search nearby
+	 * @return A Location or null if no empty blocks are found in the search radius
+	 */
 	private Location getNearestFreeBlock(Location animalLoc) {
 		if (animalLoc.getBlock().isEmpty()) {
 			return animalLoc;
@@ -109,6 +114,13 @@ public class BreedMeister extends JavaPlugin implements Listener {
 		return null;
 	}
 
+	/**
+	 * Search the entity list for an animal which is suitable for breeding
+	 * @param entities A list of the entities to search
+	 * @param dispenserLoc The Location of the dispenser being activated
+	 * @param exceptThis This entity will be skipped
+	 * @return An instance of Animals or null if no valid matches are found
+	 */
 	private Animals findValidAnimal(List<Entity> entities, Location dispenserLoc, Animals exceptThis) {
 		for(Entity e : entities) {
 			//Ensure entity is a living, adult animal
