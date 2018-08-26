@@ -5,4 +5,9 @@ generator: http://dinnerbone.com/minecraft/tools/pluginator/
 main: me.ayan4m1.plugins.breedmeister.BreedMeister
 name: BreedMeister
 startup: postworld
-version: '0.2'
+version: '0.3.0'
+permissions:
+	breedmeister.breed:
+		description: Allows activation of automated breeding dispensers
+	breedmeister.free:
+		description: Do no consume an item when breeding

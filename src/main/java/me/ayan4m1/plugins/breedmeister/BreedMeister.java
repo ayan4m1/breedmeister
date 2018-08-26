@@ -1,13 +1,18 @@
 package me.ayan4m1.plugins.breedmeister;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -31,21 +36,33 @@ public class BreedMeister extends JavaPlugin implements Listener {
 	//Radius to search (in blocks) for an empty block near animals when spawning baby
 	private Integer spawnRadius = 5;
 
+	//Store path to configuration file
+	private File configPath;
+
 	public void onEnable() {
-		getServer().getPluginManager().registerEvents(this, this);
+		this.getServer().getPluginManager().registerEvents(this, this);
+		this.configPath = new File(getDataFolder(), "BreedMeister.yml");
+		try {
+			this.getConfig().load(this.configPath);
+		} catch (IOException | InvalidConfigurationException e) {
+			getLogger().log(Level.SEVERE, "Exception loading config", e);
+		}
 	}
 
 	public void onDisable() {
 		this.breedTimes.clear();
+		try {
+			this.getConfig().save(configPath);
+		} catch (IOException e) {
+			getLogger().log(Level.SEVERE, "Exception saving config", e);
+		}
 	}
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
 		//Remove entity from breedTimes to prevent memory leaks
 		Integer entityId = event.getEntity().getEntityId();
-		if (this.breedTimes.containsKey(entityId)) {
-			this.breedTimes.remove(entityId);
-		}
+		this.breedTimes.remove(entityId);
 	}
 
 	@EventHandler
@@ -81,7 +98,7 @@ public class BreedMeister extends JavaPlugin implements Listener {
 		}
 
 		//Spawn the baby if a valid location was found
-		Animals newAnimal = (Animals)block.getWorld().spawnCreature(newLoc, animalTwo.getType());
+		Animals newAnimal = (Animals)block.getWorld().spawnEntity(newLoc, animalTwo.getType());
 		newAnimal.setBaby();
 
 		//Add the animals to the bred list
